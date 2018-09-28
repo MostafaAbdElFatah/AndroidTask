@@ -33,10 +33,11 @@ public class WifiDeviceActivity extends AppCompatActivity implements OnDiscoverP
 
 
         WifiNetworkManager manager = new WifiNetworkManager(this,SSID,pass);
-        manager.connectToWifiNetwork();
+        boolean connected = manager.connectToWifiNetwork();
 
         /***/
-        mWifiP2PManager = new WifiP2PNetworkManager(this);
+        if (connected)
+            mWifiP2PManager = new WifiP2PNetworkManager(this);
 
     }
 

@@ -31,7 +31,7 @@ public class WifiNetworkManager {
         this.pass = pass;
     }
 
-    public void connectToWifiNetwork() {
+    public boolean connectToWifiNetwork() {
 
         if (!mWifiManager.isWifiEnabled()){
             mWifiManager.setWifiEnabled(true);
@@ -40,7 +40,7 @@ public class WifiNetworkManager {
         if(currentSSID.equals( "\""+ SSID + "\"" ) ){
             Toast.makeText(context,"You Already connected to Wifi network"
                     ,Toast.LENGTH_SHORT).show();
-            return;
+            return true;
         }
 
         ScanResult mScanResult = getWiFiConfig();
@@ -64,8 +64,9 @@ public class WifiNetworkManager {
         }else {
             Toast.makeText(context,"This network not exist"
                     ,Toast.LENGTH_LONG).show();
+            return false;
         }
-
+        return false;
     }
 
     private ScanResult getWiFiConfig() {

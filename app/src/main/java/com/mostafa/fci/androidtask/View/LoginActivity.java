@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements FragmentListente
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please wait....");
-        progressDialog.setMessage("Log to Server and fetch data");
+        progressDialog.setMessage("Log to Server \nwait Fetching SSID and PASS");
         if (mRoomManager.isHasRows()){
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
