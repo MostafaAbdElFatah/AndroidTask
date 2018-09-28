@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -13,22 +15,23 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONObject;
 
 public class MQTTManager {
 
     Context context;
     MqttAndroidClient client;
+    OnReceiveData listener;
 
     public MQTTManager(Context context){
         this.context = context;
+        listener = (OnReceiveData) context;
     }
-
 
     public void connect(){
         String clientId = MqttClient.generateClientId();
         String serverURL  = URLs.broker + ":" + URLs.port;
-        final MqttAndroidClient client =
-                new MqttAndroidClient(context.getApplicationContext(), serverURL, clientId);
+        client = new MqttAndroidClient(context.getApplicationContext(), serverURL, clientId);
         try {
 
             MqttConnectOptions options = new MqttConnectOptions();
@@ -72,8 +75,8 @@ public class MQTTManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // The message was published
-                    Log.d("MQTTPROTOCOL", "subscribe:onSuccess");
-                    Toast.makeText(context,"Successfull",Toast.LENGTH_SHORT).show();
+                    /*Log.d("MQTTPROTOCOL", "subscribe:onSuccess");
+                    Toast.makeText(context,"Successfull",Toast.LENGTH_SHORT).show();*/
                 }
 
                 @Override
@@ -81,10 +84,10 @@ public class MQTTManager {
                                       Throwable exception) {
                     // The subscription could not be performed, maybe the user was not
                     // authorized to subscribe on the specified topic e.g. using wildcards
-                    Log.d("MQTTPROTOCOL", "subscribe:onFailure");
+                    /*Log.d("MQTTPROTOCOL", "subscribe:onFailure");
                     Log.d("MQTTPROTOCOL", exception.toString());
                     Log.d("MQTTPROTOCOL", exception.getLocalizedMessage());
-                    Log.d("MQTTPROTOCOL", exception.getMessage());
+                    Log.d("MQTTPROTOCOL", exception.getMessage());*/
                     exception.printStackTrace();
                 }
             });
@@ -100,9 +103,15 @@ public class MQTTManager {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.d("MQTTPROTOCOL", "messageArrived:"+ new String(message.getPayload()));
-                Toast.makeText(context,"Successfull:"+ new String(message.getPayload())
-                        ,Toast.LENGTH_SHORT).show();
+                Log.v("MQTT_PROTOCOL", "messageArrived:"+ new String(message.getPayload()));
+                String content = new String( message.getPayload() );
+                if (content.equals("ronix/network"))
+                    return;
+                try {
+                    JSONObject mJSONObject = new JSONObject(content);
+                    String pass = mJSONObject.getString("PASS");
+                    listener.onReceiveMQttData(pass);
+                }catch (Exception e){e.printStackTrace();}
             }
 
             @Override

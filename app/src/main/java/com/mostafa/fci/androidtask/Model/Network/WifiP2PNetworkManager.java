@@ -1,5 +1,6 @@
 package com.mostafa.fci.androidtask.Model.Network;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,20 +15,20 @@ import java.util.ArrayList;
 
 public class WifiP2PNetworkManager {
 
-    private Context context;
+    private Activity activity;
     private WifiP2pManager mManager;
     private BroadcastReceiver mReceiver;
     private WifiP2pManager.Channel mChannel;
     private OnDiscoverPeers mOnDiscoverPeers;
     private final IntentFilter intentFilter = new IntentFilter();
 
-    public WifiP2PNetworkManager(Context context) {
+    public WifiP2PNetworkManager(Activity activity ) {
 
-        this.context = context;
-        mOnDiscoverPeers = (OnDiscoverPeers) context;
+        this.activity= activity;
+        mOnDiscoverPeers = (OnDiscoverPeers) activity;
 
-        mManager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(context, context.getMainLooper(), null);
+        mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = mManager.initialize(activity, activity.getMainLooper(), null);
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -48,7 +49,7 @@ public class WifiP2PNetworkManager {
         });
 
         mReceiver = new WifiP2PBroadcastReceiver();
-        context.registerReceiver(mReceiver,intentFilter);
+        activity.registerReceiver(mReceiver,intentFilter);
 
     }
 
@@ -93,7 +94,7 @@ public class WifiP2PNetworkManager {
     };
 
     public void unRegister(){
-        context.unregisterReceiver(mReceiver);
+        activity.unregisterReceiver(mReceiver);
     }
 
 }

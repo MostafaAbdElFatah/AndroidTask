@@ -20,14 +20,15 @@ public class WifiNetworkManager {
     Context context;
     WifiManager mWifiManager;
 
-    String SSID = "plantnium";
-    String pass = "Asd@asd.198";
+    String SSID ;
+    String pass ;
 
 
-    public WifiNetworkManager(Context context){
+    public WifiNetworkManager(Context context,String SSID, String pass){
         this.context = context;
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-
+        this.SSID = SSID;
+        this.pass = pass;
     }
 
     public void connectToWifiNetwork() {

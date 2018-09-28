@@ -1,12 +1,9 @@
 package com.mostafa.fci.androidtask.View;
 
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.mostafa.fci.androidtask.Model.Network.OnDiscoverPeers;
-import com.mostafa.fci.androidtask.Model.Network.WifiNetwork;
 import com.mostafa.fci.androidtask.Model.Network.WifiNetworkManager;
 import com.mostafa.fci.androidtask.Model.Network.WifiP2PNetworkManager;
 import com.mostafa.fci.androidtask.R;
@@ -31,13 +28,15 @@ public class WifiDeviceActivity extends AppCompatActivity implements OnDiscoverP
         devicesListView.setEmptyView(findViewById(R.id.empty_view));
         devicesListView.setAdapter(mDevicesAdapter);
 
-        WifiNetworkManager manager = new WifiNetworkManager(this);
+        String SSID = getIntent().getStringExtra("SSID");
+        String pass = getIntent().getStringExtra("pass");
+
+
+        WifiNetworkManager manager = new WifiNetworkManager(this,SSID,pass);
         manager.connectToWifiNetwork();
 
         /***/
-
         mWifiP2PManager = new WifiP2PNetworkManager(this);
-        //WifiNetwork.getClientList(this);
 
     }
 

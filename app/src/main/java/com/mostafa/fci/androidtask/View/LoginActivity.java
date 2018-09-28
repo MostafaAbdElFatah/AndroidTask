@@ -1,5 +1,7 @@
 package com.mostafa.fci.androidtask.View;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.mostafa.fci.androidtask.Model.Database.RoomDB;
 import com.mostafa.fci.androidtask.Model.Event;
 import com.mostafa.fci.androidtask.Model.Network.MQTTManager;
+import com.mostafa.fci.androidtask.Model.Network.OnReceiveData;
 import com.mostafa.fci.androidtask.Model.Network.VolleyManager;
 import com.mostafa.fci.androidtask.Model.Network.URLs;
 import com.mostafa.fci.androidtask.Model.User;
@@ -21,17 +24,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class LoginActivity extends AppCompatActivity implements FragmentListenter {
+public class LoginActivity extends AppCompatActivity implements FragmentListenter, OnReceiveData {
 
 
 
-    private String SSID;
+    MQTTManager mMQttManager;
     RoomDB.RoomManager mRoomManager;
     FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
     SignInFragment signInFragment;
     SignUpFragment signUpFragment;
-    MQTTManager mMQttManager;
+    ProgressDialog progressDialog;
+    private String SSID = "" , pass ="";
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +46,22 @@ public class LoginActivity extends AppCompatActivity implements FragmentListente
         signInFragment = new SignInFragment();
         signUpFragment = new SignUpFragment();
 
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragment, signInFragment);
-        fragmentTransaction.commit();
-
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Please wait....");
+        progressDialog.setMessage("Log to Server and fetch data");
         if (mRoomManager.isHasRows()){
-            User user = mRoomManager.getUsers().get(0);
-            // startActivity
-
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment, signInFragment);
+            fragmentTransaction.commit();
+        }else {
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment, signUpFragment);
+            fragmentTransaction.commit();
         }
-        mMQttManager = new MQTTManager(this);
-        mMQttManager.connect();
+
+
 
     }
 
@@ -74,12 +82,20 @@ public class LoginActivity extends AppCompatActivity implements FragmentListente
 
     @Override
     public void onSuccessfulLogin() {
+        progressDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(URLs.main, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                   SSID = response.get("SSID").toString();
-                    Toast.makeText(getApplicationContext(),"SSID:" + SSID, Toast.LENGTH_SHORT).show();
+                    SSID = response.get("SSID").toString();
+                    if (SSID != "" && pass != ""){
+                        progressDialog.dismiss();
+                        Intent intent = new Intent(LoginActivity.this
+                                , WifiDeviceActivity.class);
+                        intent.putExtra("SSID",SSID);
+                        intent.putExtra("pass",pass);
+                        startActivity(intent);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -92,15 +108,21 @@ public class LoginActivity extends AppCompatActivity implements FragmentListente
         });
 
         VolleyManager.getsInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-       /****
-        MQTTManager mMQttManager = new MQTTManager(this);
+
+        mMQttManager = new MQTTManager(this);
         mMQttManager.connect();
-        **/
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        mMQttManager.closeConnection();
+    public void onReceiveMQttData(String message) {
+        this.pass = message;
+        if (SSID != "" && pass != ""){
+            progressDialog.dismiss();
+            Intent intent = new Intent(LoginActivity.this
+                    , WifiDeviceActivity.class);
+            intent.putExtra("SSID",SSID);
+            intent.putExtra("pass",pass);
+            startActivity(intent);
+        }
     }
 }

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-permission
         android:required="true"
         android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -26,8 +27,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".View.WifiDeviceActivity" >
+            android:name=".View.LoginActivity"
+            android:theme="@style/signTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,12 +38,10 @@
         </activity>
 
         <activity
-            android:name=".View.LoginActivity"
-            android:theme="@style/signTheme"/>
-
+            android:name=".View.WifiDeviceActivity"
+            android:parentActivityName=".View.LoginActivity"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-
 
     </application>
 
