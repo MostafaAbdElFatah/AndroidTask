@@ -57,7 +57,8 @@ public class WifiNetwork {
         ArrayList<String> hosts = new ArrayList<String>();
 
         InetAddress inetAddress = null;
-        for(int i=1; i < 10; i++){
+
+        for(int i=1; i < 256; i++){
             Log.d("IP_ADDRESS", "Trying: " + subnet + String.valueOf(i));
             try {
                 inetAddress = InetAddress.getByName(subnet + String.valueOf(i));

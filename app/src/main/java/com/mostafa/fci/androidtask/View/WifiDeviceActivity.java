@@ -41,7 +41,7 @@ public class WifiDeviceActivity extends AppCompatActivity implements OnDiscoverP
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please wait ....");
         progressDialog.setMessage("Discovering Devices, Please Wait Until finishing");
-        
+
         if (connected) {
             /**
              * get Devices that connected to wifi Direct
