@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public interface OnDiscoverPeers {
 
+    public void onStartTask();
+    public void onEndTask();
     public void onDiscoveredPeers(ArrayList<String> devices);
 
 }

@@ -39,7 +39,8 @@
 
         <activity
             android:name=".View.WifiDeviceActivity"
-            android:parentActivityName=".View.LoginActivity"/>
+            android:parentActivityName=".View.LoginActivity" />
+
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
